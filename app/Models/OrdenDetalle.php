@@ -22,11 +22,16 @@ class OrdenDetalle extends Model
         'Observacion',
         'Llave',
         'MesaId',
+        'Estado',
     ];
 
     protected $casts = [
         'Precio' => 'decimal:2',
         'Cantidad' => 'integer',
+    ];
+
+    protected $attributes = [
+        'Estado' => 'Pendiente',
     ];
 
     protected static function boot()

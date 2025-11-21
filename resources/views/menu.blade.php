@@ -30,8 +30,26 @@
         </div>
     </div>
 
+    <!-- Search Bar -->
+    <div class="sticky top-16 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto p-4">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="search-input"
+                    placeholder="🔍 Buscar producto o categoría (mín. 3 caracteres)..."
+                    class="w-full bg-gray-800 text-white border-2 border-gray-700 rounded-xl px-5 py-3 pl-12 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition text-lg"
+                    oninput="filtrarProductos(this.value)"
+                >
+                <svg class="w-6 h-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
     <!-- Categories Tabs -->
-    <div class="sticky top-16 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 overflow-x-auto z-40 shadow-lg">
+    <div class="sticky top-32 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700 overflow-x-auto z-40 shadow-lg">
         <div class="max-w-7xl mx-auto">
             <div class="flex space-x-2 p-4 min-w-max">
                 <button onclick="mostrarCategoria('todas')" 
@@ -63,7 +81,8 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 @foreach($categoria->productos as $producto)
                 <div onclick="abrirModalProducto('{{ $producto->Codigo }}', '{{ addslashes($producto->Nombre) }}', {{ $producto->PrecioVenta }})"
-                     class="group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-indigo-500">
+                     data-nombre="{{ $producto->Nombre }}"
+                     class="producto-card group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-indigo-500">
                     <div class="p-5">
                         <h4 class="font-bold text-base mb-3 line-clamp-2 text-white group-hover:text-indigo-300 transition min-h-[3rem]">
                             {{ $producto->Nombre }}
@@ -202,7 +221,85 @@ function mostrarCategoria(categoriaId) {
             section.style.display = 'none';
         }
     });
+    
+    // Limpiar búsqueda al cambiar de categoría
+    document.getElementById('search-input').value = '';
 }
+
+function filtrarProductos(busqueda) {
+    busqueda = busqueda.toLowerCase().trim();
+    
+    // Si hay menos de 3 caracteres, mostrar todo según categoría activa
+    if (busqueda.length < 3) {
+        document.querySelectorAll('.categoria-section').forEach(section => {
+            const categoriaActiva = document.querySelector('.categoria-tab.bg-gradient-to-r');
+            const categoriaId = categoriaActiva ? categoriaActiva.dataset.categoria : 'todas';
+            
+            if (categoriaId === 'todas' || section.dataset.categoria === categoriaId) {
+                section.style.display = 'block';
+                section.querySelectorAll('.producto-card').forEach(card => {
+                    card.style.display = 'block';
+                });
+            }
+        });
+        
+        // Ocultar mensaje de no resultados
+        const mensajeNoResultados = document.getElementById('no-resultados');
+        if (mensajeNoResultados) {
+            mensajeNoResultados.style.display = 'none';
+        }
+        return;
+    }
+    
+    // Filtrar productos
+    let hayResultados = false;
+    
+    document.querySelectorAll('.categoria-section').forEach(section => {
+        const nombreCategoria = section.querySelector('h3').textContent.toLowerCase();
+        const categoriaCoincide = nombreCategoria.includes(busqueda);
+        
+        let productosVisibles = 0;
+        
+        section.querySelectorAll('.producto-card').forEach(card => {
+            const nombreProducto = card.getAttribute('data-nombre').toLowerCase();
+            
+            if (nombreProducto.includes(busqueda) || categoriaCoincide) {
+                card.style.display = 'block';
+                productosVisibles++;
+                hayResultados = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Mostrar/ocultar sección según si tiene productos visibles
+        section.style.display = productosVisibles > 0 ? 'block' : 'none';
+    });
+    
+    // Mostrar mensaje si no hay resultados
+    const contenedor = document.querySelector('.max-w-7xl');
+    let mensajeNoResultados = document.getElementById('no-resultados');
+    
+    if (!hayResultados) {
+        if (!mensajeNoResultados) {
+            mensajeNoResultados = document.createElement('div');
+            mensajeNoResultados.id = 'no-resultados';
+            mensajeNoResultados.className = 'text-center py-20';
+            mensajeNoResultados.innerHTML = `
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-800 rounded-full mb-6">
+                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-400 mb-2">No se encontraron productos</h3>
+                <p class="text-gray-500">Intenta con otro término de búsqueda</p>
+            `;
+            contenedor.appendChild(mensajeNoResultados);
+        }
+        mensajeNoResultados.style.display = 'block';
+    } else if (mensajeNoResultados) {
+        mensajeNoResultados.style.display = 'none';
+    }
 
 function abrirModalProducto(codigo, nombre, precio) {
     productoModalActual = {

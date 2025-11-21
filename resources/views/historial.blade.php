@@ -121,7 +121,18 @@
                                             </span>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="font-medium text-white">{{ $detalle->NombreProducto }}</p>
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <p class="font-medium text-white">{{ $detalle->NombreProducto }}</p>
+                                                @if($detalle->Estado)
+                                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold
+                                                             {{ $detalle->Estado === 'Pendiente' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 
+                                                                ($detalle->Estado === 'En Preparación' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 
+                                                                'bg-green-500/20 text-green-300 border border-green-500/30') }}">
+                                                    {{ $detalle->Estado === 'Pendiente' ? '⏸️' : ($detalle->Estado === 'En Preparación' ? '🔥' : '✅') }}
+                                                    {{ $detalle->Estado }}
+                                                </span>
+                                                @endif
+                                            </div>
                                             @if($detalle->Observacion)
                                             <p class="text-sm text-yellow-400 mt-1">💬 {{ $detalle->Observacion }}</p>
                                             @endif
