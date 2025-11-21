@@ -214,16 +214,27 @@ function mostrarCategoria(categoriaId) {
         }
     });
     
+    // Limpiar búsqueda
+    document.getElementById('search-input').value = '';
+    
+    // Ocultar mensaje de no resultados si existe
+    const mensajeNoResultados = document.getElementById('no-resultados');
+    if (mensajeNoResultados) {
+        mensajeNoResultados.style.display = 'none';
+    }
+    
+    // Mostrar/ocultar secciones y resetear visibilidad de productos
     document.querySelectorAll('.categoria-section').forEach(section => {
         if (categoriaId === 'todas' || section.dataset.categoria === categoriaId) {
             section.style.display = 'block';
+            // Mostrar TODOS los productos de esta categoría
+            section.querySelectorAll('.producto-card').forEach(card => {
+                card.style.display = 'block';
+            });
         } else {
             section.style.display = 'none';
         }
     });
-    
-    // Limpiar búsqueda al cambiar de categoría
-    document.getElementById('search-input').value = '';
 }
 
 function filtrarProductos(busqueda) {
