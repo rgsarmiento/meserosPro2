@@ -21,10 +21,10 @@
             
             <!-- Filter -->
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 border border-gray-700">
-                <form method="GET" action="{{ route('historial') }}" class="flex items-center space-x-4">
-                    <label class="text-gray-300 font-medium">Filtrar por mesa:</label>
+                <form method="GET" action="{{ route('historial') }}" class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <label class="text-gray-300 font-medium whitespace-nowrap">Filtrar por mesa:</label>
                     <select name="mesa_id" onchange="this.form.submit()" 
-                            class="flex-1 max-w-xs bg-gray-700 text-white border-2 border-gray-600 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition">
+                            class="flex-1 w-full sm:max-w-xs bg-gray-700 text-white border-2 border-gray-600 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition">
                         <option value="">📋 Todas las mesas</option>
                         @foreach($mesasConOrdenes as $mesa)
                         <option value="{{ $mesa->Id }}" {{ $mesaSeleccionada == $mesa->Id ? 'selected' : '' }}>
@@ -33,7 +33,7 @@
                         @endforeach
                     </select>
                     @if($mesaSeleccionada)
-                    <a href="{{ route('historial') }}" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-3 rounded-xl font-medium transition flex items-center space-x-2 border border-red-500/30">
+                    <a href="{{ route('historial') }}" class="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-4 py-3 rounded-xl font-medium transition flex items-center space-x-2 border border-red-500/30 whitespace-nowrap">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -64,7 +64,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-sm text-gray-400">Total acumulado</p>
-                        <p class="text-2xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        <p class="text-2xl font-black bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
                             ${{ number_format($ordenesGrupo->sum('Total'), 0, ',', '.') }}
                         </p>
                     </div>
@@ -113,18 +113,18 @@
                             <p class="text-sm font-medium text-gray-400 mb-3">Productos:</p>
                             <div class="space-y-2">
                                 @foreach($orden->detalles as $detalle)
-                                <div class="flex items-start justify-between bg-gray-900/50 rounded-lg p-3">
-                                    <div class="flex items-start space-x-3 flex-1">
+                                <div class="flex items-start justify-between bg-gray-900/50 rounded-lg p-3 gap-2">
+                                    <div class="flex items-start space-x-3 flex-1 min-w-0">
                                         <div class="flex-shrink-0">
                                             <span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl text-white font-black text-lg shadow-lg">
                                                 {{ $detalle->Cantidad }}
                                             </span>
                                         </div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-2 mb-1">
-                                                <p class="font-medium text-white">{{ $detalle->NombreProducto }}</p>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center space-x-2 mb-1 flex-wrap">
+                                                <p class="font-medium text-white truncate">{{ $detalle->NombreProducto }}</p>
                                                 @if($detalle->Estado)
-                                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold
+                                                <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold flex-shrink-0
                                                              {{ $detalle->Estado === 'Pendiente' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 
                                                                 ($detalle->Estado === 'En Preparación' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 
                                                                 'bg-green-500/20 text-green-300 border border-green-500/30') }}">
@@ -138,8 +138,8 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="text-right ml-4">
-                                        <p class="font-bold text-indigo-300 text-lg">${{ number_format($detalle->Precio, 0, ',', '.') }}</p>
+                                    <div class="text-right flex-shrink-0">
+                                        <p class="font-bold text-indigo-300 text-base sm:text-lg whitespace-nowrap">${{ number_format($detalle->Precio, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
                                 @endforeach

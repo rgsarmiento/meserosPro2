@@ -30,12 +30,21 @@
         </div>
         @endif
 
+        <!-- User Search -->
+        <div class="mb-6">
+            <input type="text" 
+                   id="search-user" 
+                   placeholder="🔍 Buscar usuario por nombre..."
+                   class="w-full bg-gray-700 text-white border-2 border-gray-600 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition"
+                   oninput="filtrarUsuarios()">
+        </div>
+
         <!-- User Selection -->
         <form id="login-form" action="{{ route('authenticate') }}" method="POST">
             @csrf
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-24">
+            <div id="users-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-24">
                 @foreach($usuarios as $usuario)
-                <label class="relative cursor-pointer group">
+                <label class="relative cursor-pointer group user-card" data-nombre="{{ strtolower($usuario->Nombre) }}">
                     <input type="radio" name="usuario_id" value="{{ $usuario->Id }}" class="peer sr-only" required>
                     <div class="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-700 rounded-xl p-4 transition-all flex items-center space-x-4
                                 peer-checked:border-indigo-500 peer-checked:bg-gradient-to-br peer-checked:from-indigo-500/20 peer-checked:to-purple-500/20 
@@ -60,6 +69,17 @@
             </div>
         </form>
 
+        <!-- No Results Message -->
+        <div id="no-users" class="hidden text-center py-10">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-800 rounded-full mb-4">
+                <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-400 mb-2">No se encontraron usuarios</h3>
+            <p class="text-gray-500">Intenta con otro término de búsqueda</p>
+        </div>
+
         <!-- Sticky Submit Button -->
         <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-50">
             <div class="max-w-2xl mx-auto">
@@ -75,4 +95,28 @@
         </div>
     </div>
 </div>
+
+@section('scripts')
+<script>
+function filtrarUsuarios() {
+    const busqueda = document.getElementById('search-user').value.toLowerCase().trim();
+    const usuarios = document.querySelectorAll('.user-card');
+    let visibles = 0;
+    
+    usuarios.forEach(usuario => {
+        const nombre = usuario.getAttribute('data-nombre');
+        
+        if (busqueda === '' || nombre.includes(busqueda)) {
+            usuario.style.display = 'block';
+            visibles++;
+        } else {
+            usuario.style.display = 'none';
+        }
+    });
+    
+    // Show/hide no results message
+    document.getElementById('no-users').classList.toggle('hidden', visibles > 0);
+}
+</script>
+@endsection
 @endsection

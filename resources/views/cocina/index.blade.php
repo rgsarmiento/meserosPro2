@@ -91,17 +91,17 @@
                         <!-- Status Buttons - Solo el activo con color -->
                         <div class="flex space-x-2">
                             <button onclick="cambiarEstado({{ $detalle->Id }}, 'Pendiente')" 
-                                    class="btn-estado flex-1 py-2 px-3 rounded-lg text-xs font-bold transition
+                                    class="btn-estado flex-1 py-3 px-3 rounded-lg text-xs font-bold transition
                                            {{ $detalle->Estado === 'Pendiente' ? 'bg-red-600 text-white shadow-lg' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
                                 ⏸️ Pendiente
                             </button>
                             <button onclick="cambiarEstado({{ $detalle->Id }}, 'En Preparación')" 
-                                    class="btn-estado flex-1 py-2 px-3 rounded-lg text-xs font-bold transition
+                                    class="btn-estado flex-1 py-3 px-3 rounded-lg text-xs font-bold transition
                                            {{ $detalle->Estado === 'En Preparación' ? 'bg-yellow-600 text-white shadow-lg' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
                                 🔥 Preparando
                             </button>
                             <button onclick="cambiarEstado({{ $detalle->Id }}, 'Servido')" 
-                                    class="btn-estado flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-gray-700 text-gray-400 hover:bg-green-600 hover:text-white transition">
+                                    class="btn-estado flex-1 py-3 px-3 rounded-lg text-xs font-bold bg-gray-700 text-gray-400 hover:bg-green-600 hover:text-white transition">
                                 ✅ Servir
                             </button>
                         </div>

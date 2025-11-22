@@ -37,7 +37,7 @@
                 <input 
                     type="text" 
                     id="search-input"
-                    placeholder="🔍 Buscar producto o categoría (mín. 3 caracteres)..."
+                    placeholder="🔍 Buscar por nombre, código o categoría (mín. 3 caracteres)..."
                     class="w-full bg-gray-800 text-white border-2 border-gray-700 rounded-xl px-5 py-3 pl-12 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 transition text-lg"
                     oninput="filtrarProductos(this.value)"
                 >
@@ -82,6 +82,7 @@
                 @foreach($categoria->productos as $producto)
                 <div onclick="abrirModalProducto('{{ $producto->Codigo }}', '{{ addslashes($producto->Nombre) }}', {{ $producto->PrecioVenta }})"
                      data-nombre="{{ $producto->Nombre }}"
+                     data-codigo="{{ $producto->Codigo }}"
                      class="producto-card group cursor-pointer bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 border-2 border-gray-700 hover:border-indigo-500">
                     <div class="p-5">
                         <h4 class="font-bold text-base mb-3 line-clamp-2 text-white group-hover:text-indigo-300 transition min-h-[3rem]">
@@ -167,17 +168,17 @@
 </div>
 
 <!-- Floating Cart Button -->
-<div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-50">
-    <div class="max-w-7xl mx-auto">
+<div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-4 sm:p-6 z-50">
+    <div class="max-w-4xl mx-auto">
         <button onclick="toggleCarrito()" 
-                class="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold py-5 px-8 rounded-2xl shadow-2xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-between">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span class="text-lg">Ver Pedido</span>
+                <span class="text-base sm:text-lg">Ver Pedido</span>
             </div>
-            <span id="cart-count" class="bg-white text-green-600 px-4 py-2 rounded-full text-lg font-black min-w-[3rem] text-center">0</span>
+            <span id="cart-count" class="bg-white text-green-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-base sm:text-lg font-black min-w-[2.5rem] sm:min-w-[3rem] text-center">0</span>
         </button>
     </div>
 </div>
@@ -290,8 +291,9 @@ function filtrarProductos(busqueda) {
         
         section.querySelectorAll('.producto-card').forEach(card => {
             const nombreProducto = card.getAttribute('data-nombre').toLowerCase();
+            const codigoProducto = card.getAttribute('data-codigo').toLowerCase();
             
-            if (nombreProducto.includes(busqueda) || categoriaCoincide) {
+            if (nombreProducto.includes(busqueda) || codigoProducto.includes(busqueda) || categoriaCoincide) {
                 card.style.display = 'block';
                 productosVisibles++;
                 hayResultados = true;
