@@ -30,11 +30,10 @@
         </div>
         @endif
 
-        <!-- Login Form -->
-        <form action="{{ route('authenticate') }}" method="POST" class="space-y-6">
+        <!-- User Selection -->
+        <form id="login-form" action="{{ route('authenticate') }}" method="POST">
             @csrf
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-24">
                 @foreach($usuarios as $usuario)
                 <label class="relative cursor-pointer group">
                     <input type="radio" name="usuario_id" value="{{ $usuario->Id }}" class="peer sr-only" required>
@@ -59,14 +58,19 @@
                 </label>
                 @endforeach
             </div>
-
-            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-black text-lg py-5 px-8 rounded-2xl shadow-2xl transition-all transform hover:scale-105 active:scale-95">
-                🚀 Iniciar Sesión
-            </button>
         </form>
 
+        <!-- Sticky Submit Button -->
+        <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 via-gray-900 to-transparent p-6 z-50">
+            <div class="max-w-2xl mx-auto">
+                <button type="submit" form="login-form" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-black text-lg py-5 px-8 rounded-2xl shadow-2xl transition-all transform hover:scale-105 active:scale-95">
+                    🚀 Iniciar Sesión
+                </button>
+            </div>
+        </div>
+
         <!-- Footer -->
-        <div class="text-center mt-8">
+        <div class="text-center mt-8 mb-4">
             <p class="text-gray-500 text-sm">Sistema de Gestión de Pedidos</p>
         </div>
     </div>
