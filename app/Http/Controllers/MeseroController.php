@@ -80,19 +80,23 @@ class MeseroController extends Controller
             'productos' => 'required|array|min:1',
             'productos.*.codigo' => 'required|exists:Productos,Codigo',
             'productos.*.cantidad' => 'required|integer|min:1',
+            'productos.*.precio' => 'required|numeric|min:0',
             'productos.*.observacion' => 'nullable|string',
         ]);
 
         $mesa = Mesa::findOrFail($mesaId);
         $meseroId = Session::get('mesero_id');
 
-        // Calcular total
+        // Calcular total usando el precio del carrito (puede ser personalizado)
         $total = 0;
         $productosData = [];
 
         foreach ($request->productos as $item) {
             $producto = Producto::where('Codigo', $item['codigo'])->first();
-            $subtotal = $producto->PrecioVenta * $item['cantidad'];
+            
+            // Usar el precio del carrito (puede ser personalizado para productos de $1)
+            $precioUnitario = $item['precio'];
+            $subtotal = $precioUnitario * $item['cantidad'];
             $total += $subtotal;
 
             $productosData[] = [

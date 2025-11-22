@@ -118,6 +118,23 @@
                 <p id="modal-producto-precio" class="text-4xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"></p>
             </div>
             
+            <!-- Custom Price Input (only for $1 products) -->
+            <div id="precio-personalizado-container" class="mb-6 hidden">
+                <label class="block text-gray-300 font-medium mb-3">💰 Precio Personalizado</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl font-bold">$</span>
+                    <input 
+                        type="number" 
+                        id="precio-personalizado"
+                        placeholder="Ingresa el precio"
+                        min="1"
+                        step="1"
+                        class="w-full bg-gray-700/50 text-white rounded-xl p-4 pl-10 border-2 border-yellow-600 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/50 transition text-2xl font-bold"
+                    >
+                </div>
+                <p class="text-xs text-yellow-400 mt-2">Este producto requiere precio personalizado</p>
+            </div>
+            
             <div class="mb-6">
                 <label class="block text-gray-300 font-medium mb-3">Cantidad</label>
                 <div class="flex items-center justify-center space-x-4">
@@ -324,6 +341,20 @@ function abrirModalProducto(codigo, nombre, precio) {
     document.getElementById('modal-producto-precio').textContent = '$' + Math.round(precio).toLocaleString('es-CO');
     document.getElementById('modal-cantidad').textContent = '1';
     document.getElementById('modal-observacion').value = '';
+    
+    // Mostrar/ocultar campo de precio personalizado para productos de $1
+    const precioContainer = document.getElementById('precio-personalizado-container');
+    const precioInput = document.getElementById('precio-personalizado');
+    
+    if (parseFloat(precio) === 1) {
+        precioContainer.classList.remove('hidden');
+        precioInput.value = '';
+        precioInput.focus();
+    } else {
+        precioContainer.classList.add('hidden');
+        precioInput.value = '';
+    }
+    
     document.getElementById('producto-modal').classList.remove('hidden');
 }
 
@@ -345,7 +376,22 @@ function agregarAlCarrito() {
     const cantidad = parseInt(document.getElementById('modal-cantidad').textContent);
     const observacion = document.getElementById('modal-observacion').value.trim();
     
-    const existente = carrito.find(item => item.codigo === productoModalActual.codigo && item.observacion === observacion);
+    // Obtener precio (personalizado si es $1, o el precio original)
+    let precioFinal = productoModalActual.precio;
+    
+    if (productoModalActual.precio === 1) {
+        const precioPersonalizado = parseFloat(document.getElementById('precio-personalizado').value);
+        
+        if (!precioPersonalizado || precioPersonalizado <= 0) {
+            alert('⚠️ Por favor ingresa un precio válido para este producto');
+            document.getElementById('precio-personalizado').focus();
+            return;
+        }
+        
+        precioFinal = precioPersonalizado;
+    }
+    
+    const existente = carrito.find(item => item.codigo === productoModalActual.codigo && item.observacion === observacion && item.precio === precioFinal);
     
     if (existente) {
         existente.cantidad += cantidad;
@@ -353,7 +399,7 @@ function agregarAlCarrito() {
         carrito.push({
             codigo: productoModalActual.codigo,
             nombre: productoModalActual.nombre,
-            precio: productoModalActual.precio,
+            precio: precioFinal,
             cantidad: cantidad,
             observacion: observacion
         });

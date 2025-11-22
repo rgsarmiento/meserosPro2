@@ -34,24 +34,26 @@
         <form action="{{ route('authenticate') }}" method="POST" class="space-y-6">
             @csrf
             
-            <div class="grid grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 @foreach($usuarios as $usuario)
                 <label class="relative cursor-pointer group">
                     <input type="radio" name="usuario_id" value="{{ $usuario->Id }}" class="peer sr-only" required>
-                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-700 rounded-2xl p-8 text-center transition-all 
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-700 rounded-xl p-4 transition-all flex items-center space-x-4
                                 peer-checked:border-indigo-500 peer-checked:bg-gradient-to-br peer-checked:from-indigo-500/20 peer-checked:to-purple-500/20 
                                 hover:border-gray-600 hover:shadow-xl group-hover:scale-105 transform">
-                        <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-2xl transition">
-                            <span class="text-3xl font-black text-white">{{ substr($usuario->Nombre, 0, 1) }}</span>
+                        <div class="w-14 h-14 flex-shrink-0 bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-2xl transition">
+                            <span class="text-2xl font-black text-white">{{ substr($usuario->Nombre, 0, 1) }}</span>
                         </div>
-                        <p class="font-bold text-white text-lg">{{ $usuario->Nombre }}</p>
-                        <div class="mt-3 opacity-0 peer-checked:opacity-100 transition">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-500 text-white">
-                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                                Seleccionado
-                            </span>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-white text-base truncate">{{ $usuario->Nombre }}</p>
+                            <div class="mt-1 opacity-0 peer-checked:opacity-100 transition">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-500 text-white">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Seleccionado
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </label>
