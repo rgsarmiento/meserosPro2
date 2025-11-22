@@ -40,7 +40,7 @@ class MeseroController extends Controller
             return redirect()->route('mesas');
         }
 
-        return back()->withErrors(['error' => 'Usuario no válido']);
+        return back()->withErrors(['error' => 'Usuario no válido o inactivo']);
     }
 
     // Mostrar mesas disponibles

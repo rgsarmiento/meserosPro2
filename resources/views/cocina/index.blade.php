@@ -76,7 +76,14 @@
                             <div class="flex-1">
                                 <h4 class="font-bold text-white text-lg leading-tight">{{ $detalle->NombreProducto }}</h4>
                                 @if($detalle->Observacion)
-                                <p class="text-sm text-yellow-400 mt-1">💬 {{ $detalle->Observacion }}</p>
+                                <div class="mt-2 bg-yellow-500/20 border-2 border-yellow-500/50 rounded-lg p-3">
+                                    <div class="flex items-start space-x-2">
+                                        <svg class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                        <p class="text-yellow-300 font-bold text-sm leading-relaxed">{{ $detalle->Observacion }}</p>
+                                    </div>
+                                </div>
                                 @endif
                             </div>
                         </div>
@@ -192,6 +199,53 @@
         setInterval(() => {
             location.reload();
         }, 10000);
+
+        // Alerta sonora para nuevas órdenes
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentOrders = {{ $ordenes->count() }};
+            const lastOrders = parseInt(sessionStorage.getItem('lastOrders') || '0');
+            
+            // Si hay más órdenes que antes, reproducir sonido
+            if (currentOrders > lastOrders) {
+                playNotificationSound();
+            }
+            
+            // Guardar estado actual
+            sessionStorage.setItem('lastOrders', currentOrders);
+        });
+
+        function playNotificationSound() {
+            // Crear contexto de audio
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioCtx.currentTime;
+
+            // Crear oscilador principal (tipo sirena)
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            // Configuración "escandalosa" (tipo alarma nuclear/sirena)
+            osc.type = 'sawtooth'; // Onda diente de sierra es más estridente
+            
+            // Secuencia de tonos repetitivos (3 veces)
+            for (let i = 0; i < 3; i++) {
+                const startTime = now + (i * 0.5);
+                
+                // Tono alto
+                osc.frequency.setValueAtTime(880, startTime); // La5
+                osc.frequency.linearRampToValueAtTime(1760, startTime + 0.1); // Subida rápida a La6
+                
+                // Volumen fuerte
+                gain.gain.setValueAtTime(0.8, startTime);
+                gain.gain.linearRampToValueAtTime(0.8, startTime + 0.4);
+                gain.gain.linearRampToValueAtTime(0.001, startTime + 0.5);
+            }
+
+            osc.start(now);
+            osc.stop(now + 1.5); // Duración total 1.5 segundos
+        }
     </script>
 </body>
 </html>

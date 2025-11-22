@@ -102,7 +102,7 @@
 </div>
 
 <!-- Product Modal -->
-<div id="producto-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+<div id="producto-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
     <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl max-w-md w-full border-2 border-indigo-500 shadow-2xl">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
