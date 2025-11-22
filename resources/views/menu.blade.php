@@ -206,7 +206,7 @@
                 <span class="text-gray-300">Total:</span>
                 <span id="cart-total" class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">$0</span>
             </div>
-            <button onclick="enviarPedido()" 
+            <button onclick="enviarPedido(event)" 
                     class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-5 px-6 rounded-2xl shadow-2xl transition-all transform hover:scale-105 active:scale-95">
                 ✓ Enviar Pedido
             </button>
@@ -546,15 +546,40 @@ function mostrarMensajeAdvertencia(mensaje) {
     }, 2000);
 }
 
-async function enviarPedido() {
+// Bandera para prevenir envíos duplicados
+let enviandoPedido = false;
+let timeoutEnvio = null;
+
+async function enviarPedido(event) {
+    // Prevenir múltiples clics
+    if (enviandoPedido) {
+        console.log('Ya hay un pedido en proceso de envío');
+        return;
+    }
+    
     if (carrito.length === 0) {
         mostrarMensajeAdvertencia('El carrito está vacío.<br>Agrega productos antes de enviar el pedido.');
         return;
     }
     
     const btn = event.target;
+    
+    // Marcar como enviando
+    enviandoPedido = true;
     btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
     btn.textContent = '⏳ Enviando...';
+    
+    // Timeout de seguridad (30 segundos)
+    timeoutEnvio = setTimeout(() => {
+        if (enviandoPedido) {
+            enviandoPedido = false;
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.textContent = '✓ Enviar Pedido';
+            mostrarMensajeAdvertencia('La solicitud tardó demasiado.<br>Por favor, verifica tu conexión e intenta nuevamente.');
+        }
+    }, 30000);
     
     try {
         const response = await fetch('{{ route("crear.orden", $mesa->Id) }}', {
@@ -570,23 +595,45 @@ async function enviarPedido() {
         
         const data = await response.json();
         
+        // Limpiar timeout
+        if (timeoutEnvio) {
+            clearTimeout(timeoutEnvio);
+            timeoutEnvio = null;
+        }
+        
         if (data.success) {
             mostrarMensajeExito();
             carrito = [];
             actualizarCarrito();
             toggleCarrito();
+            
+            // No permitir más clics, redirigir después del mensaje
             setTimeout(() => {
                 window.location.href = '{{ route("mesas") }}';
             }, 1500);
         } else {
+            // Permitir reintentar en caso de error
+            enviandoPedido = false;
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.textContent = '✓ Enviar Pedido';
             mostrarMensajeAdvertencia('Error al enviar el pedido.<br>Por favor, intenta nuevamente.');
         }
     } catch (error) {
         console.error('Error:', error);
-        mostrarMensajeAdvertencia('Error de conexión.<br>Verifica tu red e intenta nuevamente.');
-    } finally {
+        
+        // Limpiar timeout
+        if (timeoutEnvio) {
+            clearTimeout(timeoutEnvio);
+            timeoutEnvio = null;
+        }
+        
+        // Permitir reintentar en caso de error
+        enviandoPedido = false;
         btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
         btn.textContent = '✓ Enviar Pedido';
+        mostrarMensajeAdvertencia('Error de conexión.<br>Verifica tu red e intenta nuevamente.');
     }
 }
 </script>

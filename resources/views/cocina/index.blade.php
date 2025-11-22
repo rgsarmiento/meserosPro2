@@ -42,8 +42,8 @@
                 <!-- Order Header -->
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-700">
                     <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
-                            <span class="text-3xl font-black">#{{ $orden->Id }}</span>
+                        <div class="min-w-[4rem] h-16 px-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <span class="text-2xl sm:text-3xl font-black whitespace-nowrap">#{{ $orden->Id }}</span>
                         </div>
                         <div>
                             <h3 class="text-2xl font-bold text-white">{{ $orden->mesa->Nombre }}</h3>
