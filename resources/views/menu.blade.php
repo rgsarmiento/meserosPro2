@@ -496,6 +496,31 @@ function toggleCarrito() {
     modal.classList.toggle('hidden');
 }
 
+function mostrarMensajeExito() {
+    // Create success modal
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-gradient-to-br from-green-600 to-emerald-600 rounded-3xl p-8 max-w-md w-full shadow-2xl transform animate-bounce-in border-4 border-green-400">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full mb-6 shadow-xl">
+                    <svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h3 class="text-3xl font-black text-white mb-3">¡Pedido Enviado!</h3>
+                <p class="text-green-100 text-lg font-medium">El pedido se ha registrado exitosamente</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Remove after animation
+    setTimeout(() => {
+        modal.remove();
+    }, 1400);
+}
+
 async function enviarPedido() {
     if (carrito.length === 0) {
         alert('El pedido está vacío');
@@ -521,11 +546,13 @@ async function enviarPedido() {
         const data = await response.json();
         
         if (data.success) {
-            alert('✓ ¡Pedido enviado exitosamente!');
+            mostrarMensajeExito();
             carrito = [];
             actualizarCarrito();
             toggleCarrito();
-            window.location.href = '{{ route("mesas") }}';
+            setTimeout(() => {
+                window.location.href = '{{ route("mesas") }}';
+            }, 1500);
         } else {
             alert('✗ Error al enviar el pedido');
         }

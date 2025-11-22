@@ -46,7 +46,8 @@ class MeseroController extends Controller
     // Mostrar mesas disponibles
     public function mesas()
     {
-        $mesas = Mesa::orderBy('Nombre')->get();
+        // Ordenar naturalmente (Mesa 1, Mesa 2, Mesa 3... en lugar de Mesa 1, Mesa 10, Mesa 11...)
+        $mesas = Mesa::all()->sortBy('Nombre', SORT_NATURAL)->values();
         return view('mesas', compact('mesas'));
     }
 
