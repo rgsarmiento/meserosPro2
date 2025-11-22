@@ -521,9 +521,34 @@ function mostrarMensajeExito() {
     }, 1400);
 }
 
+function mostrarMensajeAdvertencia(mensaje) {
+    // Create warning modal
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-3xl p-8 max-w-md w-full shadow-2xl transform animate-shake border-4 border-orange-300">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full mb-6 shadow-xl">
+                    <svg class="w-16 h-16 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-3xl font-black text-white mb-3">¡Atención!</h3>
+                <p class="text-orange-100 text-lg font-medium">${mensaje}</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Remove after animation
+    setTimeout(() => {
+        modal.remove();
+    }, 2000);
+}
+
 async function enviarPedido() {
     if (carrito.length === 0) {
-        alert('El pedido está vacío');
+        mostrarMensajeAdvertencia('El carrito está vacío.<br>Agrega productos antes de enviar el pedido.');
         return;
     }
     
@@ -554,11 +579,11 @@ async function enviarPedido() {
                 window.location.href = '{{ route("mesas") }}';
             }, 1500);
         } else {
-            alert('✗ Error al enviar el pedido');
+            mostrarMensajeAdvertencia('Error al enviar el pedido.<br>Por favor, intenta nuevamente.');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('✗ Error al enviar el pedido');
+        mostrarMensajeAdvertencia('Error de conexión.<br>Verifica tu red e intenta nuevamente.');
     } finally {
         btn.disabled = false;
         btn.textContent = '✓ Enviar Pedido';
