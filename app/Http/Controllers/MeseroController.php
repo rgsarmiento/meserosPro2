@@ -56,6 +56,9 @@ class MeseroController extends Controller
     {
         $mesa = Mesa::findOrFail($mesaId);
         
+        // Obtener todas las mesas para el selector de "Mover a otra mesa"
+        $todasLasMesas = Mesa::all()->sortBy('Nombre', SORT_NATURAL)->values();
+        
         // Obtener categorías activas con sus productos (filtrados por precio > 0 y SeVende = true)
         $categorias = Categoria::activas()
             ->with(['productos' => function($query) {
@@ -71,7 +74,7 @@ class MeseroController extends Controller
             ->orderBy('Nombre')
             ->get();
 
-        return view('menu', compact('mesa', 'categorias'));
+        return view('menu', compact('mesa', 'categorias', 'todasLasMesas'));
     }
 
     // Crear orden

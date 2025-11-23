@@ -7,11 +7,11 @@
     <!-- Mesa Info Header -->
     <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-6 shadow-2xl">
         <div class="max-w-7xl mx-auto">
-            <a href="{{ route('mesas') }}" class="inline-flex items-center text-white/90 hover:text-white text-sm mb-3 transition">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ route('mesas') }}" class="inline-flex items-center bg-white/20 hover:bg-white/30 text-white font-bold px-4 py-2 rounded-xl text-base mb-3 transition-all transform hover:scale-105 shadow-lg backdrop-blur-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                Volver a mesas
+                ← Volver a Mesas
             </a>
             <div class="flex items-center justify-between">
                 <div>
@@ -206,10 +206,73 @@
                 <span class="text-gray-300">Total:</span>
                 <span id="cart-total" class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">$0</span>
             </div>
+            
+            <!-- Botones de gestión del carrito -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="confirmarVaciarCarrito()" 
+                        class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-105 active:scale-95">
+                    🗑️ Vaciar
+                </button>
+                <button onclick="abrirModalMoverMesa()" 
+                        class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-105 active:scale-95">
+                    ↔️ Mover Mesa
+                </button>
+            </div>
+            
             <button onclick="enviarPedido(event)" 
-                    class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-5 px-6 rounded-2xl shadow-2xl transition-all transform hover:scale-105 active:scale-95">
+                    class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-5 px-6 rounded-2xl shadow-2xl transition-all active:scale-95">
                 ✓ Enviar Pedido
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Mover a Otra Mesa -->
+<div id="mover-mesa-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl max-w-2xl w-full border-2 border-blue-500 shadow-2xl max-h-[80vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-white">↔️ Mover Carrito a Otra Mesa</h3>
+                <button onclick="cerrarModalMoverMesa()" class="text-gray-400 hover:text-white transition p-2 hover:bg-gray-800 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <p class="text-gray-300 mb-6">Selecciona la mesa a la que deseas mover este pedido:</p>
+            
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="selector-mesas">
+                <!-- Las mesas se generarán dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar Vaciar Carrito -->
+<div id="confirmar-vaciar-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl max-w-md w-full border-2 border-red-500 shadow-2xl">
+        <div class="p-6">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-red-500/20 rounded-full mb-4">
+                    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-3">¿Vaciar Carrito?</h3>
+                <p class="text-gray-300">Se eliminarán todos los productos del carrito. Esta acción no se puede deshacer.</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="cerrarModalConfirmarVaciar()" 
+                        class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-xl transition-all">
+                    Cancelar
+                </button>
+                <button onclick="confirmarYVaciarCarrito()" 
+                        class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 px-4 rounded-xl transition-all">
+                    Sí, Vaciar
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -218,8 +281,49 @@
 
 @section('scripts')
 <script>
+// Obtener ID de la mesa desde la URL o el DOM
+const mesaId = '{{ $mesa->Id }}';
+const carritoKey = `carrito_mesa_${mesaId}`;
+
 let carrito = [];
 let productoModalActual = null;
+
+// Función para guardar carrito en localStorage
+function guardarCarritoEnLocalStorage() {
+    try {
+        localStorage.setItem(carritoKey, JSON.stringify(carrito));
+    } catch (error) {
+        console.error('Error al guardar carrito en localStorage:', error);
+    }
+}
+
+// Función para cargar carrito desde localStorage
+function cargarCarritoDesdeLocalStorage() {
+    try {
+        const carritoGuardado = localStorage.getItem(carritoKey);
+        if (carritoGuardado) {
+            carrito = JSON.parse(carritoGuardado);
+            actualizarCarrito();
+        }
+    } catch (error) {
+        console.error('Error al cargar carrito desde localStorage:', error);
+        carrito = [];
+    }
+}
+
+// Función para limpiar carrito del localStorage
+function limpiarCarritoDeLocalStorage() {
+    try {
+        localStorage.removeItem(carritoKey);
+    } catch (error) {
+        console.error('Error al limpiar carrito de localStorage:', error);
+    }
+}
+
+// Cargar carrito al iniciar la página
+document.addEventListener('DOMContentLoaded', function() {
+    cargarCarritoDesdeLocalStorage();
+});
 
 function mostrarCategoria(categoriaId) {
     document.querySelectorAll('.categoria-tab').forEach(tab => {
@@ -376,7 +480,7 @@ function agregarAlCarrito() {
     if (!productoModalActual) return;
     
     const cantidad = parseInt(document.getElementById('modal-cantidad').textContent);
-    const observacion = document.getElementById('modal-observacion').value.trim();
+    let observacion = document.getElementById('modal-observacion').value.trim();
     
     // Obtener precio (personalizado si es $1, o el precio original)
     let precioFinal = productoModalActual.precio;
@@ -391,6 +495,14 @@ function agregarAlCarrito() {
         }
         
         precioFinal = precioPersonalizado;
+        
+        // Agregar el precio personalizado a las observaciones
+        const precioTexto = `Precio: $${Math.round(precioPersonalizado).toLocaleString('es-CO')}`;
+        if (observacion) {
+            observacion = `${precioTexto} - ${observacion}`;
+        } else {
+            observacion = precioTexto;
+        }
     }
     
     const existente = carrito.find(item => item.codigo === productoModalActual.codigo && item.observacion === observacion && item.precio === precioFinal);
@@ -425,6 +537,9 @@ function actualizarCarrito() {
     
     const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
     const total = carrito.reduce((sum, item) => sum + (parseFloat(item.precio) * parseInt(item.cantidad)), 0);
+    
+    // Guardar en localStorage cada vez que se actualiza el carrito
+    guardarCarritoEnLocalStorage();
     
     cartCount.textContent = totalItems;
     cartTotal.textContent = '$' + Math.round(total).toLocaleString('es-CO');
@@ -604,6 +719,7 @@ async function enviarPedido(event) {
         if (data.success) {
             mostrarMensajeExito();
             carrito = [];
+            limpiarCarritoDeLocalStorage(); // Limpiar localStorage después de enviar
             actualizarCarrito();
             toggleCarrito();
             
@@ -634,6 +750,140 @@ async function enviarPedido(event) {
         btn.classList.remove('opacity-50', 'cursor-not-allowed');
         btn.textContent = '✓ Enviar Pedido';
         mostrarMensajeAdvertencia('Error de conexión.<br>Verifica tu red e intenta nuevamente.');
+    }
+}
+
+// ========================================
+// GESTIÓN DEL CARRITO
+// ========================================
+
+// Vaciar carrito
+function confirmarVaciarCarrito() {
+    if (carrito.length === 0) {
+        mostrarMensajeAdvertencia('El carrito ya está vacío');
+        return;
+    }
+    
+    // Abrir modal de confirmación personalizado
+    document.getElementById('confirmar-vaciar-modal').classList.remove('hidden');
+}
+
+function cerrarModalConfirmarVaciar() {
+    document.getElementById('confirmar-vaciar-modal').classList.add('hidden');
+}
+
+function confirmarYVaciarCarrito() {
+    cerrarModalConfirmarVaciar();
+    vaciarCarrito();
+}
+
+function vaciarCarrito() {
+    carrito = [];
+    limpiarCarritoDeLocalStorage();
+    actualizarCarrito();
+    
+    // Mostrar mensaje de éxito
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-24 right-6 bg-green-600 text-white px-6 py-3 rounded-xl shadow-2xl z-50';
+    toast.textContent = '✓ Carrito vaciado';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+// Mover a otra mesa
+function abrirModalMoverMesa() {
+    if (carrito.length === 0) {
+        mostrarMensajeAdvertencia('El carrito está vacío.<br>No hay nada que mover.');
+        return;
+    }
+    
+    generarSelectorMesas();
+    document.getElementById('mover-mesa-modal').classList.remove('hidden');
+}
+
+function cerrarModalMoverMesa() {
+    document.getElementById('mover-mesa-modal').classList.add('hidden');
+}
+
+function generarSelectorMesas() {
+    const mesas = @json($todasLasMesas);
+    const mesaActualId = '{{ $mesa->Id }}';
+    const container = document.getElementById('selector-mesas');
+    
+    // Función para obtener el color del borde según el estado
+    function getEstadoColor(estado) {
+        switch(estado) {
+            case 'Libre':
+                return 'border-green-500';
+            case 'Ocupada':
+                return 'border-red-500';
+            case 'Reservada':
+                return 'border-yellow-500';
+            case 'Limpieza':
+                return 'border-blue-500';
+            default:
+                return 'border-gray-500';
+        }
+    }
+    
+    container.innerHTML = mesas
+        .filter(mesa => mesa.Id != mesaActualId) // Excluir mesa actual
+        .map(mesa => `
+            <button 
+                onclick="moverCarritoAMesa('${mesa.Id}', '${mesa.Nombre.replace(/'/g, "\\'")}')" 
+                class="bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-4 px-3 rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg border-4 ${getEstadoColor(mesa.Estado)}"
+            >
+                ${mesa.Nombre}
+            </button>
+        `).join('');
+}
+
+function moverCarritoAMesa(mesaId, mesaNombre) {
+    // Guardar carrito en localStorage de la mesa destino
+    const carritoDestino = `carrito_mesa_${mesaId}`;
+    
+    try {
+        // Guardar en la nueva mesa
+        localStorage.setItem(carritoDestino, JSON.stringify(carrito));
+        
+        // Limpiar de la mesa actual
+        limpiarCarritoDeLocalStorage();
+        
+        // Limpiar carrito local
+        carrito = [];
+        actualizarCarrito();
+        
+        // Cerrar modales
+        cerrarModalMoverMesa();
+        toggleCarrito();
+        
+        // Mostrar mensaje de éxito en AZUL
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4';
+        modal.innerHTML = `
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl p-8 max-w-md w-full shadow-2xl transform animate-bounce-in border-4 border-blue-400">
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full mb-6 shadow-xl">
+                        <svg class="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-3">¡Carrito Movido!</h3>
+                    <p class="text-blue-100 text-lg font-medium">El pedido se ha movido a ${mesaNombre}</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Redirigir a la nueva mesa después de 1.2 segundos
+        setTimeout(() => {
+            modal.remove();
+            window.location.href = `/mesa/${mesaId}/menu`;
+        }, 1200);
+        
+    } catch (error) {
+        console.error('Error al mover carrito:', error);
+        mostrarMensajeAdvertencia('Error al mover el carrito.<br>Intenta nuevamente.');
     }
 }
 </script>

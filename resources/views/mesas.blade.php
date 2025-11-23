@@ -53,8 +53,16 @@
             <a href="{{ route('menu', $mesa->Id) }}" 
                data-nombre="{{ strtolower($mesa->Nombre) }}"
                data-estado="{{ $mesa->Estado }}"
+               data-mesa-id="{{ $mesa->Id }}"
                class="mesa-card group relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 text-center transition-all transform hover:scale-105 hover:shadow-2xl active:scale-95 border-2
                       {{ $mesa->Estado === 'Ocupada' ? 'border-red-500/50 hover:border-red-400' : 'border-green-500/50 hover:border-green-400' }}">
+                
+                <!-- Badge de Pedido Pendiente -->
+                <div class="pending-badge hidden absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg border-2 border-gray-900 z-10">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
                 
                 <!-- Icon -->
                 <div class="w-12 h-12 mx-auto mb-2 rounded-lg flex items-center justify-center transition-all group-hover:scale-110
@@ -178,6 +186,33 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('search-mesa').value = busquedaGuardada;
         filtrarMesas();
     }
+    
+    // Verificar pedidos pendientes en localStorage
+    verificarPedidosPendientes();
 });
+
+// Función para verificar si hay pedidos pendientes en localStorage
+function verificarPedidosPendientes() {
+    document.querySelectorAll('.mesa-card').forEach(card => {
+        const mesaId = card.getAttribute('data-mesa-id');
+        const carritoKey = `carrito_mesa_${mesaId}`;
+        
+        try {
+            const carrito = localStorage.getItem(carritoKey);
+            if (carrito) {
+                const items = JSON.parse(carrito);
+                if (items && items.length > 0) {
+                    // Mostrar badge de pedido pendiente
+                    const badge = card.querySelector('.pending-badge');
+                    if (badge) {
+                        badge.classList.remove('hidden');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error al verificar pedido pendiente:', error);
+        }
+    });
+}
 </script>
 @endsection
