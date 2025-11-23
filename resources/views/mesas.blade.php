@@ -151,5 +151,33 @@ function filtrarMesas() {
     // Show/hide no results message
     document.getElementById('no-mesas').classList.toggle('hidden', visibles > 0);
 }
+
+// Auto-refresh cada 10 segundos para actualizar estado de mesas
+setInterval(() => {
+    // Guardar estado actual de filtros y búsqueda
+    const busquedaActual = document.getElementById('search-mesa').value;
+    
+    // Guardar en sessionStorage para mantener después del refresh
+    sessionStorage.setItem('mesasEstadoFiltro', estadoActual);
+    sessionStorage.setItem('mesasBusqueda', busquedaActual);
+    
+    // Recargar página
+    window.location.reload();
+}, 10000);
+
+// Restaurar filtros después del refresh
+window.addEventListener('DOMContentLoaded', () => {
+    const estadoGuardado = sessionStorage.getItem('mesasEstadoFiltro');
+    const busquedaGuardada = sessionStorage.getItem('mesasBusqueda');
+    
+    if (estadoGuardado && estadoGuardado !== 'todas') {
+        filtrarPorEstado(estadoGuardado);
+    }
+    
+    if (busquedaGuardada) {
+        document.getElementById('search-mesa').value = busquedaGuardada;
+        filtrarMesas();
+    }
+});
 </script>
 @endsection
