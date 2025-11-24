@@ -34,7 +34,7 @@
 
     <!-- Main Content -->
     <div class="p-6">
-        <div id="ordenes-container" class="space-y-6">
+        <div id="ordenes-container" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 max-w-[1920px] mx-auto">
             @forelse($ordenes as $orden)
             <div class="orden-card bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-6 border-2 
                         {{ $orden->detalles->contains('Estado', 'En Preparación') ? 'border-yellow-500' : 'border-orange-500/50' }} 
@@ -63,7 +63,7 @@
                 </div>
 
                 <!-- Products Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 gap-4">
                     @foreach($orden->detalles as $detalle)
                     <div class="producto-item bg-gray-900/50 rounded-2xl p-5 border-2 border-gray-700 transition"
                          data-detalle-id="{{ $detalle->Id }}"
@@ -89,20 +89,21 @@
                         </div>
 
                         <!-- Status Buttons - Solo el activo con color -->
-                        <div class="flex space-x-2">
+                        <div class="grid grid-cols-3 gap-2">
                             <button onclick="cambiarEstado({{ $detalle->Id }}, 'Pendiente')" 
-                                    class="btn-estado flex-1 py-3 px-3 rounded-lg text-xs font-bold transition
+                                    class="btn-estado py-3 px-3 rounded-lg text-xs font-bold transition
                                            {{ $detalle->Estado === 'Pendiente' ? 'bg-red-600 text-white shadow-lg' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
                                 ⏸️ Pendiente
                             </button>
                             <button onclick="cambiarEstado({{ $detalle->Id }}, 'En Preparación')" 
-                                    class="btn-estado flex-1 py-3 px-3 rounded-lg text-xs font-bold transition
+                                    class="btn-estado py-3 px-3 rounded-lg text-xs font-bold transition
                                            {{ $detalle->Estado === 'En Preparación' ? 'bg-yellow-600 text-white shadow-lg' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
                                 🔥 Preparando
                             </button>
-                            <button onclick="cambiarEstado({{ $detalle->Id }}, 'Servido')" 
-                                    class="btn-estado flex-1 py-3 px-3 rounded-lg text-xs font-bold bg-gray-700 text-gray-400 hover:bg-green-600 hover:text-white transition">
-                                ✅ Servir
+                            <button onclick="cambiarEstado({{ $detalle->Id }}, 'Listo')" 
+                                    class="btn-estado py-3 px-3 rounded-lg text-xs font-bold transition
+                                           {{ $detalle->Estado === 'Listo' ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
+                                ✓ Listo
                             </button>
                         </div>
                     </div>
@@ -138,51 +139,34 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Si se marcó como servido, remover el producto
-                    if (nuevoEstado === 'Servido') {
-                        productoItem.style.opacity = '0';
-                        productoItem.style.transform = 'scale(0.8)';
-                        
-                        setTimeout(() => {
-                            productoItem.remove();
-                            
-                            // Verificar si la orden quedó sin productos
-                            const ordenCard = productoItem.closest('.orden-card');
-                            const productosRestantes = ordenCard.querySelectorAll('.producto-item').length;
-                            
-                            if (productosRestantes === 0) {
-                                ordenCard.style.opacity = '0';
-                                ordenCard.style.transform = 'scale(0.95)';
-                                setTimeout(() => {
-                                    ordenCard.remove();
-                                    actualizarContador();
-                                }, 300);
-                            }
-                        }, 300);
-                    } else {
-                        // Actualizar botones visualmente
-                        const botones = productoItem.querySelectorAll('.btn-estado');
-                        botones.forEach(btn => {
-                            // Remover clases de color
-                            btn.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600', 'text-white', 'shadow-lg');
-                            btn.classList.add('bg-gray-700', 'text-gray-400');
-                        });
-                        
-                        // Aplicar color al botón activo
-                        const btnTexto = nuevoEstado === 'Pendiente' ? 'Pendiente' : 'Preparando';
-                        const btnActivo = Array.from(botones).find(btn => btn.textContent.includes(btnTexto));
-                        if (btnActivo) {
-                            btnActivo.classList.remove('bg-gray-700', 'text-gray-400');
-                            if (nuevoEstado === 'Pendiente') {
-                                btnActivo.classList.add('bg-red-600', 'text-white', 'shadow-lg');
-                            } else {
-                                btnActivo.classList.add('bg-yellow-600', 'text-white', 'shadow-lg');
-                            }
+                    // Actualizar botones visualmente de inmediato
+                    const botones = productoItem.querySelectorAll('.btn-estado');
+                    botones.forEach(btn => {
+                        // Remover clases de color
+                        btn.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600', 'text-white', 'shadow-lg');
+                        btn.classList.add('bg-gray-700', 'text-gray-400');
+                    });
+                    
+                    // Aplicar color al botón activo
+                    let btnTexto;
+                    if (nuevoEstado === 'Pendiente') btnTexto = 'Pendiente';
+                    else if (nuevoEstado === 'En Preparación') btnTexto = 'Preparando';
+                    else if (nuevoEstado === 'Listo') btnTexto = 'Listo';
+                    
+                    const btnActivo = Array.from(botones).find(btn => btn.textContent.includes(btnTexto));
+                    if (btnActivo) {
+                        btnActivo.classList.remove('bg-gray-700', 'text-gray-400');
+                        if (nuevoEstado === 'Pendiente') {
+                            btnActivo.classList.add('bg-red-600', 'text-white', 'shadow-lg');
+                        } else if (nuevoEstado === 'En Preparación') {
+                            btnActivo.classList.add('bg-yellow-600', 'text-white', 'shadow-lg');
+                        } else if (nuevoEstado === 'Listo') {
+                            btnActivo.classList.add('bg-green-600', 'text-white', 'shadow-lg');
                         }
-                        
-                        // Actualizar data-estado
-                        productoItem.setAttribute('data-estado', nuevoEstado);
                     }
+                    
+                    // Actualizar data-estado
+                    productoItem.setAttribute('data-estado', nuevoEstado);
                     
                     actualizarContador();
                 }

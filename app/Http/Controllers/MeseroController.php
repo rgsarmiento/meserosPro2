@@ -187,4 +187,20 @@ class MeseroController extends Controller
         Session::forget('mesero_nombre');
         return redirect()->route('login');
     }
+
+    // Obtener productos listos para servir
+    public function getProductosListos()
+    {
+        $productosListos = OrdenDetalle::where('Estado', 'Listo')
+            ->with(['mesa', 'orden.usuario'])
+            ->orderBy('Id', 'asc')
+            ->get()
+            ->groupBy('MesaId');
+        
+        return response()->json([
+            'success' => true,
+            'productos' => $productosListos,
+            'total' => OrdenDetalle::where('Estado', 'Listo')->count()
+        ]);
+    }
 }

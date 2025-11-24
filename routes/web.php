@@ -15,6 +15,9 @@ Route::middleware('mesero')->group(function () {
     Route::post('/mesa/{id}/orden', [MeseroController::class, 'crearOrden'])->name('crear.orden');
     Route::get('/historial', [MeseroController::class, 'historial'])->name('historial');
     Route::get('/logout', [MeseroController::class, 'logout'])->name('logout');
+    
+    // API para notificaciones de productos listos
+    Route::get('/api/productos-listos', [MeseroController::class, 'getProductosListos'])->name('productos.listos');
 });
 
 // Rutas para cocina (accesibles sin autenticación de mesero)

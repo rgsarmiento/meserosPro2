@@ -35,7 +35,7 @@ class CocinaController extends Controller
     public function cambiarEstado(Request $request, $detalleId)
     {
         $request->validate([
-            'estado' => 'required|in:Pendiente,En Preparación,Servido'
+            'estado' => 'required|in:Pendiente,En Preparación,Listo,Servido'
         ]);
 
         $detalle = OrdenDetalle::findOrFail($detalleId);
