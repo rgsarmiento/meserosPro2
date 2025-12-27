@@ -18,6 +18,7 @@ class Orden extends Model
         'MesaId',
         'Total',
         'Estado',
+        'Impreso',
     ];
 
     protected $casts = [

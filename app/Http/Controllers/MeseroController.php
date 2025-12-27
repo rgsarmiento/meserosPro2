@@ -10,6 +10,7 @@ use App\Models\Producto;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class MeseroController extends Controller
 {
@@ -111,35 +112,45 @@ class MeseroController extends Controller
             ];
         }
 
-        // Crear la orden
-        $orden = Orden::create([
-            'FechaHora' => now(),
-            'UsuarioId' => $meseroId,
-            'MesaId' => $mesaId,
-            'Total' => $total,
-            'Estado' => 'Pendiente',
-        ]);
-
-        // Crear los detalles de la orden (guardando precio total, no unitario)
-        foreach ($productosData as $item) {
-            OrdenDetalle::create([
-                'OrdenId' => $orden->Id,
-                'LlaveOrden' => $orden->Llave,
-                'CodigoProducto' => $item['producto']->Codigo,
-                'NombreProducto' => $item['producto']->Nombre,
-                'CategoriaId' => $item['producto']->Id_Categoria,
-                'Cantidad' => $item['cantidad'],
-                'Precio' => $item['subtotal'], // Precio total (cantidad * precio unitario)
-                'Observacion' => $item['observacion'],
+        // Iniciar transacción para asegurar integridad
+        $orden = DB::transaction(function () use ($meseroId, $mesaId, $total, $productosData, $mesa) {
+            // Crear la orden con Impreso = 2 (Pendiente de terminar) para que nodo NO la imprima aún
+            $orden = Orden::create([
+                'FechaHora' => now(),
+                'UsuarioId' => $meseroId,
                 'MesaId' => $mesaId,
+                'Total' => $total,
+                'Estado' => 'Pendiente',
+                'Impreso' => 2, // 2 = Creando... (Nodo debe ignorar esto)
             ]);
-        }
 
-        // Actualizar estado de la mesa y registrar hora de ocupación
-        $mesa->update([
-            'Estado' => 'Ocupada',
-            'FechaHora' => now()
-        ]);
+            // Crear los detalles de la orden
+            foreach ($productosData as $item) {
+                OrdenDetalle::create([
+                    'OrdenId' => $orden->Id,
+                    'LlaveOrden' => $orden->Llave,
+                    'CodigoProducto' => $item['producto']->Codigo,
+                    'NombreProducto' => $item['producto']->Nombre,
+                    'CategoriaId' => $item['producto']->Id_Categoria,
+                    'Cantidad' => $item['cantidad'],
+                    'Precio' => $item['subtotal'],
+                    'Observacion' => $item['observacion'],
+                    'MesaId' => $mesaId,
+                ]);
+            }
+
+            // Actualizar estado de la mesa
+            $mesa->update([
+                'Estado' => 'Ocupada',
+                'FechaHora' => now()
+            ]);
+
+            // FINALMENTE, marcar como lista para imprimir (Impreso = 0)
+            // Esto asegura que "nodo" solo vea la orden cuando esté COMPLETA
+            $orden->update(['Impreso' => 0]);
+
+            return $orden;
+        });
 
         return response()->json([
             'success' => true,
